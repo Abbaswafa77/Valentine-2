@@ -5,17 +5,31 @@
 <title>Valentine 💘</title>
 
 <style>
-body {
+html, body {
   margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
   font-family: Arial, sans-serif;
   background: #ffe6f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
 .hidden { display: none; }
 
-h1, h2 {
-  margin-top: 20px;
+#game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  margin-bottom: 20px;
 }
 
 /* HEART GRID */
@@ -23,8 +37,6 @@ h1, h2 {
   display: grid;
   grid-template-columns: repeat(7, 70px);
   gap: 10px;
-  justify-content: center;
-  margin-top: 40px;
 }
 
 /* EMPTY SPACES */
@@ -49,6 +61,10 @@ h1, h2 {
 }
 
 /* VALENTINE PAGE */
+#valentine {
+  position: absolute;
+}
+
 #yes, #no {
   font-size: 22px;
   padding: 12px 28px;
@@ -56,6 +72,7 @@ h1, h2 {
   position: relative;
 }
 
+/* FIREWORKS */
 canvas {
   position: fixed;
   top: 0;
@@ -69,7 +86,7 @@ canvas {
 
 <!-- GAME PAGE -->
 <div id="game">
-  <h2>Match all the pairs 💖</h2>
+  <h2>Claudia, please match all the pairs &lt;3</h2>
   <div class="heart" id="heart"></div>
 </div>
 
@@ -83,7 +100,7 @@ canvas {
 <canvas id="fx"></canvas>
 
 <script>
-/* IMAGE PAIRS */
+/* 13 IMAGE PAIRS */
 const images = [
   "img1.jpg","img1.jpg",
   "img2.jpg","img2.jpg",
@@ -94,12 +111,15 @@ const images = [
   "img7.jpg","img7.jpg",
   "img8.jpg","img8.jpg",
   "img9.jpg","img9.jpg",
-  "img10.jpg","img10.jpg"
+  "img10.jpg","img10.jpg",
+  "img11.jpg","img11.jpg",
+  "img12.jpg","img12.jpg",
+  "img13.jpg","img13.jpg"
 ];
 
 images.sort(() => Math.random() - 0.5);
 
-/* HEART SHAPE LAYOUT (20 slots) */
+/* HEART LAYOUT (26 SLOTS) */
 const layout = [
   0,1,1,0,1,1,0,
   1,1,1,1,1,1,1,
@@ -128,11 +148,11 @@ layout.forEach(slot => {
     card.appendChild(img);
     heart.appendChild(card);
 
-    card.onclick = () => flip(card, img);
+    card.onclick = () => flip(img);
   }
 });
 
-function flip(card, img) {
+function flip(img) {
   if (img.style.display === "block" || second) return;
 
   img.style.display = "block";
@@ -141,14 +161,14 @@ function flip(card, img) {
     first = img;
   } else {
     second = img;
-    setTimeout(checkMatch, 800);
+    setTimeout(checkMatch, 700);
   }
 }
 
 function checkMatch() {
   if (first.src === second.src) {
     matched++;
-    if (matched === 10) {
+    if (matched === 13) {
       document.getElementById("game").classList.add("hidden");
       document.getElementById("valentine").classList.remove("hidden");
     }
@@ -159,48 +179,18 @@ function checkMatch() {
   first = second = null;
 }
 
-/* NO BUTTON ESCAPES */
+/* NO BUTTON RUNS AWAY */
 const no = document.getElementById("no");
 no.onmouseover = () => {
   no.style.left = Math.random()*300 - 150 + "px";
   no.style.top = Math.random()*200 - 100 + "px";
 };
 
-/* YES FIREWORKS + HEARTS */
+/* HEART-SHAPED CONTINUOUS FIREWORKS */
 const canvas = document.getElementById("fx");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-document.getElementById("yes").onclick = () => {
-  let particles = [];
-  for (let i = 0; i < 200; i++) {
-    particles.push({
-      x: canvas.width/2,
-      y: canvas.height/2,
-      vx: (Math.random()-0.5)*8,
-      vy: (Math.random()-0.5)*8,
-      life: 100
-    });
-  }
-
-  function animate() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p => {
-      ctx.fillStyle = "pink";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
-      ctx.fill();
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life--;
-    });
-    particles = particles.filter(p => p.life > 0);
-    if (particles.length) requestAnimationFrame(animate);
-  }
-  animate();
-};
-</script>
-
-</body>
-</html>
+let hearts = [];
+let firework
