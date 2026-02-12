@@ -12,18 +12,10 @@ html, body{
   justify-content:center;
   align-items:center;
   text-align:center;
-  overflow:hidden;
 }
 #yes,#no{
   font-size:22px; padding:12px 28px; margin:20px; position:relative;
-  cursor:pointer;
-  border-radius:10px;
-  border:none;
-  background:#ff4da6;
-  color:white;
-  transition: transform 0.2s;
 }
-#yes:hover { transform: scale(1.1); }
 canvas{position:fixed; top:0; left:0; pointer-events:none;}
 </style>
 </head>
@@ -38,73 +30,43 @@ canvas{position:fixed; top:0; left:0; pointer-events:none;}
 
 <script>
 const no=document.getElementById("no");
-no.onmouseover=()=>{
-  no.style.left=Math.random()*300-150+"px";
-  no.style.top=Math.random()*200-100+"px";
-};
+no.onmouseover=()=>{no.style.left=Math.random()*300-150+"px"; no.style.top=Math.random()*200-100+"px";};
 
-/* CANVAS SETUP */
 const canvas=document.getElementById("fx");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
-
 let hearts=[], fireworksOn=false;
 
-const colors = ["#ff1a75", "#ff4da6", "#ff66cc", "#ff99e6", "#ffb3d9", "#ff80bf"];
-
-/* START FIREWORKS + MUSIC ON YES */
 document.getElementById("yes").onclick=()=>{
   fireworksOn=true;
   document.getElementById("romanticMusic").play();
   animate();
 };
 
-/* SPAWN HEART PARTICLES */
 function spawnHeart(){
   const centerX=Math.random()*canvas.width;
   const centerY=Math.random()*canvas.height/2;
-  for(let t=0; t<Math.PI*2; t+=0.3){
+  for(let t=0;t<Math.PI*2;t+=0.3){
     const x=16*Math.pow(Math.sin(t),3);
     const y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
-    hearts.push({
-      x:centerX, y:centerY,
-      vx:x*0.15 + (Math.random()-0.5)*2,
-      vy:y*0.15 + (Math.random()-0.5)*2,
-      life:100 + Math.random()*20,
-      color: colors[Math.floor(Math.random()*colors.length)],
-      size: 3 + Math.random()*2
-    });
+    hearts.push({x:centerX, y:centerY, vx:x*0.15, vy:y*0.15, life:80});
   }
 }
 
-/* ANIMATE HEARTS */
 function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  if(fireworksOn && Math.random()<0.07) spawnHeart();
-
+  if(fireworksOn && Math.random()<0.05) spawnHeart();
   hearts.forEach(h=>{
-    ctx.fillStyle=h.color;
+    ctx.fillStyle="hotpink";
     ctx.beginPath();
-    ctx.arc(h.x,h.y,h.size,0,Math.PI*2);
+    ctx.arc(h.x,h.y,3,0,Math.PI*2);
     ctx.fill();
-    // gentle outward float
-    h.x += h.vx*0.5;
-    h.y += h.vy*0.5;
-    h.life--;
-    // optional sparkle effect
-    if(Math.random()<0.02){
-      ctx.fillStyle=colors[Math.floor(Math.random()*colors.length)];
-      ctx.beginPath();
-      ctx.arc(h.x+Math.random()*5-2.5, h.y+Math.random()*5-2.5, 1.5,0,Math.PI*2);
-      ctx.fill();
-    }
+    h.x+=h.vx; h.y+=h.vy; h.life--;
   });
-
-  hearts = hearts.filter(h=>h.life>0);
+  hearts=hearts.filter(h=>h.life>0);
   requestAnimationFrame(animate);
 }
 </script>
-
 </body>
 </html>
