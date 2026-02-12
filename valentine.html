@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Will you be my Valentine?</title>
+<style>
+html, body{
+  margin:0; width:100%; height:100%;
+  font-family:Arial,sans-serif;
+  background:#ffe6f0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+#yes,#no{
+  font-size:22px; padding:12px 28px; margin:20px; position:relative;
+}
+canvas{position:fixed; top:0; left:0; pointer-events:none;}
+</style>
+</head>
+<body>
+
+<h1>Will you be my Valentine? 💘</h1>
+<button id="yes">YES</button>
+<button id="no">NO</button>
+
+<audio id="romanticMusic" src="love.mp3"></audio>
+<canvas id="fx"></canvas>
+
+<script>
+const no=document.getElementById("no");
+no.onmouseover=()=>{no.style.left=Math.random()*300-150+"px"; no.style.top=Math.random()*200-100+"px";};
+
+const canvas=document.getElementById("fx");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+let hearts=[], fireworksOn=false;
+
+document.getElementById("yes").onclick=()=>{
+  fireworksOn=true;
+  document.getElementById("romanticMusic").play();
+  animate();
+};
+
+function spawnHeart(){
+  const centerX=Math.random()*canvas.width;
+  const centerY=Math.random()*canvas.height/2;
+  for(let t=0;t<Math.PI*2;t+=0.3){
+    const x=16*Math.pow(Math.sin(t),3);
+    const y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
+    hearts.push({x:centerX, y:centerY, vx:x*0.15, vy:y*0.15, life:80});
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(fireworksOn && Math.random()<0.05) spawnHeart();
+  hearts.forEach(h=>{
+    ctx.fillStyle="hotpink";
+    ctx.beginPath();
+    ctx.arc(h.x,h.y,3,0,Math.PI*2);
+    ctx.fill();
+    h.x+=h.vx; h.y+=h.vy; h.life--;
+  });
+  hearts=hearts.filter(h=>h.life>0);
+  requestAnimationFrame(animate);
+}
+</script>
+</body>
+</html>
