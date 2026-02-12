@@ -61,6 +61,9 @@ h2 {
 /* VALENTINE PAGE */
 #valentine {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #yes, #no {
@@ -96,6 +99,9 @@ canvas {
 
 <canvas id="fx"></canvas>
 
+<!-- MUSIC -->
+<audio id="romanticMusic" src="love.mp3"></audio>
+
 <script>
 /* 13 IMAGE PAIRS */
 const images = [
@@ -113,8 +119,6 @@ const images = [
   "img12.jpg","img12.jpg",
   "img13.jpg","img13.jpg"
 ];
-
-/* SHUFFLE IMAGES */
 images.sort(() => Math.random() - 0.5);
 
 /* HEART GRID LAYOUT (26 SLOTS) */
@@ -164,6 +168,7 @@ function checkMatch() {
   if (first.src === second.src) {
     matched++;
     if (matched === 13) {
+      // All pairs matched → show Valentine page
       document.getElementById("game").classList.add("hidden");
       document.getElementById("valentine").classList.remove("hidden");
     }
@@ -181,7 +186,7 @@ no.onmouseover = () => {
   no.style.top = Math.random()*200 - 100 + "px";
 };
 
-/* HEART-SHAPED CONTINUOUS FIREWORKS */
+/* HEART-SHAPED CONTINUOUS FIREWORKS + MUSIC */
 const canvas = document.getElementById("fx");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
@@ -192,6 +197,7 @@ let fireworksOn = false;
 
 document.getElementById("yes").onclick = () => {
   fireworksOn = true;
+  document.getElementById("romanticMusic").play();
   animate();
 };
 
