@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine 💘</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #ffe6f0;
+  text-align: center;
+}
+
+.hidden { display: none; }
+
+h1, h2 {
+  margin-top: 20px;
+}
+
+/* HEART GRID */
+.heart {
+  display: grid;
+  grid-template-columns: repeat(7, 70px);
+  gap: 10px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+/* EMPTY SPACES */
+.empty {
+  visibility: hidden;
+}
+
+/* CARDS */
+.card {
+  width: 70px;
+  height: 70px;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  display: none;
+}
+
+/* VALENTINE PAGE */
+#yes, #no {
+  font-size: 22px;
+  padding: 12px 28px;
+  margin: 20px;
+  position: relative;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- GAME PAGE -->
+<div id="game">
+  <h2>Match all the pairs 💖</h2>
+  <div class="heart" id="heart"></div>
+</div>
+
+<!-- VALENTINE PAGE -->
+<div id="valentine" class="hidden">
+  <h1>Will you be my Valentine? 💘</h1>
+  <button id="yes">YES</button>
+  <button id="no">NO</button>
+</div>
+
+<canvas id="fx"></canvas>
+
+<script>
+/* IMAGE PAIRS */
+const images = [
+  "img1.jpg","img1.jpg",
+  "img2.jpg","img2.jpg",
+  "img3.jpg","img3.jpg",
+  "img4.jpg","img4.jpg",
+  "img5.jpg","img5.jpg",
+  "img6.jpg","img6.jpg",
+  "img7.jpg","img7.jpg",
+  "img8.jpg","img8.jpg",
+  "img9.jpg","img9.jpg",
+  "img10.jpg","img10.jpg"
+];
+
+images.sort(() => Math.random() - 0.5);
+
+/* HEART SHAPE LAYOUT (20 slots) */
+const layout = [
+  0,1,1,0,1,1,0,
+  1,1,1,1,1,1,1,
+  1,1,1,1,1,1,1,
+  0,1,1,1,1,1,0,
+  0,0,1,1,1,0,0
+];
+
+const heart = document.getElementById("heart");
+let first = null, second = null, matched = 0;
+let imgIndex = 0;
+
+/* BUILD GRID */
+layout.forEach(slot => {
+  if (slot === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    heart.appendChild(empty);
+  } else {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const img = document.createElement("img");
+    img.src = images[imgIndex++];
+
+    card.appendChild(img);
+    heart.appendChild(card);
+
+    card.onclick = () => flip(card, img);
+  }
+});
+
+function flip(card, img) {
+  if (img.style.display === "block" || second) return;
+
+  img.style.display = "block";
+
+  if (!first) {
+    first = img;
+  } else {
+    second = img;
+    setTimeout(checkMatch, 800);
+  }
+}
+
+function checkMatch() {
+  if (first.src === second.src) {
+    matched++;
+    if (matched === 10) {
+      document.getElementById("game").classList.add("hidden");
+      document.getElementById("valentine").classList.remove("hidden");
+    }
+  } else {
+    first.style.display = "none";
+    second.style.display = "none";
+  }
+  first = second = null;
+}
+
+/* NO BUTTON ESCAPES */
+const no = document.getElementById("no");
+no.onmouseover = () => {
+  no.style.left = Math.random()*300 - 150 + "px";
+  no.style.top = Math.random()*200 - 100 + "px";
+};
+
+/* YES FIREWORKS + HEARTS */
+const canvas = document.getElementById("fx");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+document.getElementById("yes").onclick = () => {
+  let particles = [];
+  for (let i = 0; i < 200; i++) {
+    particles.push({
+      x: canvas.width/2,
+      y: canvas.height/2,
+      vx: (Math.random()-0.5)*8,
+      vy: (Math.random()-0.5)*8,
+      life: 100
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      ctx.fillStyle = "pink";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+      ctx.fill();
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life--;
+    });
+    particles = particles.filter(p => p.life > 0);
+    if (particles.length) requestAnimationFrame(animate);
+  }
+  animate();
+};
+</script>
+
+</body>
+</html>
